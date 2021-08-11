@@ -47,7 +47,7 @@ namespace ElevenNote.Services
         {
             using (var ctx = new ApplicationDbContext())
             {
-                var entity = ctx.Notes.Single(e => e.OwnerId == _userId);
+                var entity = ctx.Notes.Single(e => e.NoteId == id);
                 return new NoteDetail
                 {
                     NoteId = entity.NoteId,
@@ -55,6 +55,20 @@ namespace ElevenNote.Services
                     Content = entity.Content,
                     CreatedUtc = entity.CreatedUtc
                 };
+            }
+        }
+
+        public bool UpdateNote(NoteEdit note)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity = ctx.Notes.Single(e => e.NoteId == note.NoteId && e.OwnerId == _userId);
+
+                entity.Title = note.Title;
+                entity.Content = note.Content;
+                entity.ModifiedUtc = DateTimeOffset.UtcNow;
+
+                return ctx.SaveChanges() == 1;
             }
         }
     }
